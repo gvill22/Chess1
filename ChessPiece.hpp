@@ -11,27 +11,30 @@
 
 
 class ChessPiece{
-    private:
-        std::string icon;
-        std::string color;
-        std::pair<int,int> position;
 
+private:
+    std::string icon;
+    std::string color;
+    std::pair<int,int> position;
+
+
+public:
+    // So far it seems the only thing that is different between the different
+    // classes of chessPieces is that they generate different moves.
+    ChessPiece(std::string i, std::string c, std::pair<int,int> p);
     
-    public:
-        // So far it seems the only thing that is different between the different
-        // classes of chessPieces is that they generate different moves.
-        ChessPiece(std::string i, std::string c, std::pair<int,int> p) {icon = i; color = c; position = p; };
-        
-        void setName( std::string i) { icon = i; } ;
-        std::string getName() const { return icon; };
+    void setName( std::string i);
 
-        void setColor( std::string c) { color = c; } ;
-        std::string getColor() const { return color; };
+    std::string getName() const;
 
-        void setPosition( std::pair<int,int> p ) { position = p; };
-        std::pair<int,int> getPosition() { return position; };
+    void setColor( std::string c);
+    std::string getColor() const;
 
-        virtual std::vector<std::pair<int,int>> generateMoves() = 0;
+    void setPosition( std::pair<int,int> p );
+    std::pair<int,int> getPosition();
+
+    virtual std::vector<std::pair<int,int>> generateMoves() = 0;
+
 };
 
 
