@@ -112,11 +112,14 @@ void Board::setupBoard()
     }
 }
 
+
+
 void Board::displayBoard()
-{
+{   
+    std::cout << "   ";
     for (int i = 0; i < 8; i++)
     {
-        std::cout << "    " << i << "  ";
+        std::cout << "   " << i << "   ";
     }
     
 
