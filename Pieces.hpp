@@ -55,10 +55,10 @@ public:
 
 class Queen : public ChessPiece
 {
-
+        
 public:
     
-    Queen(std::string i, std::string c, std::pair<int,int> p) : ChessPiece(i,c,p) {};
+    Queen(std::string i, std::string c, std::pair<int,int> p) : ChessPiece(i,c,p){};
 
     std::vector<std::pair<int,int>> generateMoves();
 
