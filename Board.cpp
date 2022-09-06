@@ -38,12 +38,12 @@ void Board::setupBoard()
             if(row == 1)
             {
                 // It has to be dynamically allocated :(
-                ChessPiece* newPiece = new Pawn("P", "b", std::make_pair(row,col));
+                ChessPiece* newPiece = new Pawn("P", "b", std::make_pair(row,col), true);
                 this->gameBoard[row][col].setCurrentPiece(newPiece);
             }
             if(row == 6)
             {
-                ChessPiece* newPiece = new Pawn("P", "w", std::make_pair(row,col));
+                ChessPiece* newPiece = new Pawn("P", "w", std::make_pair(row,col), true);
                 this->gameBoard[row][col].setCurrentPiece(newPiece);
             }
 
@@ -131,19 +131,19 @@ void Board::displayBoard()
         {
             std::cout << "|";
 
-            //ChessPiece* currentPiece = this->gameBoard[row][col].getCurrentPiece();
+            ChessPiece* currentPiece = this->gameBoard[row][col].getCurrentPiece();
 
-            if(this->gameBoard[row][col].getCurrentPiece() == nullptr)
+            if(currentPiece == nullptr)
             {
                 std::cout << "      ";
             }
-            else if(this->gameBoard[row][col].getCurrentPiece()->getName().length() > 1)
+            else if(currentPiece->getName().length() > 1)
             {
-                std::cout << "  " << this->gameBoard[row][col].getCurrentPiece()->getColor() << this->gameBoard[row][col].getCurrentPiece()->getName() <<" ";
+                std::cout << "  " << currentPiece->getColor() << currentPiece->getName() <<" ";
             }
             else
             {
-                std::cout << "  " << this->gameBoard[row][col].getCurrentPiece()->getColor() << this->gameBoard[row][col].getCurrentPiece()->getName() << "  ";
+                std::cout << "  " << currentPiece->getColor() << currentPiece->getName() << "  ";
             }
             
 
@@ -153,16 +153,29 @@ void Board::displayBoard()
     }
 }
 
+
+
 std::vector<std::pair<int,int>> Board::getMoves(std::pair<int,int> coordinates)
 {
-    std::vector<std::pair<int,int>> moves;
+    ChessPiece* piece = this->gameBoard[coordinates.first][coordinates.second].getCurrentPiece();
+    std::vector<std::pair<int,int>> moves = piece->generateMoves(); // We need to make sure that these moves aren't out of bounds or illegal.
+    // Either we do the validation here or I create another function called like validate moves or something.
     return moves;
 }
 
+
+
 void Board::displayMoves(std::vector<std::pair<int,int>> moveList)
 {
+    std::cout << "\n" << "The list of available moves are: \n";
 
+    for(auto it = moveList.cbegin(); it != moveList.cend(); it++)
+    {
+        std::cout << "\t" << "row: " << it->first << " col: " << it->second << "\n";
+    }
 }
+
+
 
 void Board::makeMove(std::pair<int,int> moveHere)
 {

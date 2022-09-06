@@ -5,10 +5,13 @@
 
 class Pawn : public ChessPiece
 {
+private:
+    //pawns are allowed to move two spaces forward on their first move
+    bool firstMove; // Initially will be true after first move it will be false
 
 public:
     
-    Pawn(std::string i, std::string c, std::pair<int,int> p) : ChessPiece(i,c,p) {};
+    Pawn(std::string i, std::string c, std::pair<int,int> p, bool f) : ChessPiece(i,c,p) {firstMove = f;};
 
     std::vector<std::pair<int,int>> generateMoves();
 
