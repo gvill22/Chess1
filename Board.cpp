@@ -1,5 +1,32 @@
 #include "Board.hpp"
 
+// this function will create a copy of a vector without moves that have the same color
+// piece on that square
+std::vector<std::pair<int,int>> Board::removeFriendlyFireMoves(std::vector<std::pair<int,int>> &moveList, ChessPiece* currentP)
+{
+    std::vector<std::pair<int,int>> valid = std::vector<std::pair<int,int>>();
+    
+    for(auto it = moveList.begin(); it != moveList.end() ; it++ )
+    {
+        ChessPiece* piece = this->gameBoard[it->first][it->second].getCurrentPiece();
+        if(piece == nullptr)
+        {
+            valid.push_back(std::make_pair(it->first,it->second));
+        }
+        if(piece != nullptr && piece->getColor() != currentP->getColor())
+        {
+            valid.push_back(std::make_pair(it->first,it->second));
+        }
+    }
+    
+    return valid;
+
+}
+
+
+
+
+
 std::string hBorder()
 {
     return "   ---------------------------------------------------------";
@@ -158,21 +185,33 @@ void Board::displayBoard()
 std::vector<std::pair<int,int>> Board::getMoves(std::pair<int,int> coordinates)
 {
     ChessPiece* piece = this->gameBoard[coordinates.first][coordinates.second].getCurrentPiece();
-    std::vector<std::pair<int,int>> moves = piece->generateMoves(); // We need to make sure that these moves aren't out of bounds or illegal.
-    // Either we do the validation here or I create another function called like validate moves or something.
-    return moves;
+    std::vector<std::pair<int,int>> moves = piece->generateMoves();
+    // now we can go and get rid of invalid moves
+
+    std::vector<std::pair<int,int>> betterMoves = removeFriendlyFireMoves(moves,piece);
+ 
+    return betterMoves;
 }
 
 
 
 void Board::displayMoves(std::vector<std::pair<int,int>> moveList)
 {
-    std::cout << "\n" << "The list of available moves are: \n";
 
-    for(auto it = moveList.cbegin(); it != moveList.cend(); it++)
+    if(moveList.empty())
     {
-        std::cout << "\t" << "row: " << it->first << " col: " << it->second << "\n";
+        std::cout <<"\n" << "There are no valid moves for the selected piece\n\n\n";
     }
+    else
+    {
+        std::cout << "\n" << "The list of available moves are: \n";
+
+        for(auto it = moveList.cbegin(); it != moveList.cend(); it++)
+        {
+            std::cout << "\t" << "row: " << it->first << " col: " << it->second << "\n";
+        }
+    }
+
 }
 
 

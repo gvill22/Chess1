@@ -16,6 +16,7 @@ void validateMoves(std::vector<std::pair<int,int>> &moveList)
             {
                 return true;
             }
+
             return false;
         }
     );

@@ -22,6 +22,8 @@ int main()
     // currentBoard.displayMoves(qmoves);
 
     std::vector<std::pair<int,int>> kmoves = currentBoard.getMoves(std::pair<int,int>(7,4));
+
     currentBoard.displayMoves(kmoves);
+    currentBoard.displayBoard();
     return 0;
 }

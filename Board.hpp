@@ -43,6 +43,9 @@ public:
     // in Addition to this there might be a need to make an eatPiece function that
     // could delete the piece object because it was dynamically allocated
     void makeMove(std::pair<int,int> moveHere);
+
+
+    std::vector<std::pair<int,int>> removeFriendlyFireMoves(std::vector<std::pair<int,int>> &moveList, ChessPiece* piece);
     
 
 };
