@@ -4,26 +4,38 @@
 
 int main()
 {
-    Board currentBoard = Board();
-    currentBoard.displayBoard();
-    std::cout << "\n";
-    currentBoard.setupBoard();
-    currentBoard.displayBoard();
-    //std::vector<std::pair<int,int>> pmoves = currentBoard.getMoves(std::pair<int,int>(6,1));
-    //currentBoard.displayMoves(pmoves);
-    //std::vector<std::pair<int,int>> bmoves = currentBoard.getMoves(std::pair<int,int>(7,5));
-    //currentBoard.displayMoves(bmoves);
 
-    std::vector<std::pair<int,int>> rmoves = currentBoard.getMoves(std::pair<int,int>(7,7));
-    //currentBoard.displayMoves(rmoves);
+    Board board = Board();
+    board.setupBoard();
+    board.displayBoard();
+    board.welcomePrompt();
+    while(board.isGameOver() == false)
+    {
+        int userSelection = -1;
+        
+        std::pair<int,int> selectedPiece;
+        std::pair<int,int> move;
+        std::vector<std::pair<int,int>> moves;
+        std::vector<std::pair<int,int>> *movesPtr = &moves;
+        do
+        {
+            
+            selectedPiece = board.readUserSelectedPiece();    
+            
+            moves = board.getMoves(selectedPiece);
+            if( board.getPieceAtCoordinates(selectedPiece)->getName() == "P" )
+            {
+                moves = board.removeInvalidPawnMoves(*movesPtr, board.getPieceAtCoordinates(selectedPiece));
+            }
+            board.displayMoves(moves); // this will display the moves for the piece at the coordinates
+            board.promptNewPieceOrMakeMove();
+            userSelection = board.readUserSelection();
+            board.displayBoard();
+            
+        } while (userSelection == -1);
+        
+        move = board.readUserMove();
+        board.makeMove(selectedPiece, move);
 
-
-    // std::vector<std::pair<int,int>> qmoves = currentBoard.getMoves(std::pair<int, int>(7,3));
-    // currentBoard.displayMoves(qmoves);
-
-    std::vector<std::pair<int,int>> kmoves = currentBoard.getMoves(std::pair<int,int>(7,4));
-
-    currentBoard.displayMoves(kmoves);
-    currentBoard.displayBoard();
-    return 0;
+    }
 }

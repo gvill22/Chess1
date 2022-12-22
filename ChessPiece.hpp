@@ -31,7 +31,8 @@ public:
     std::string getColor() const;
 
     void setPosition( std::pair<int,int> p );
-    std::pair<int,int> getPosition();
+
+    std::pair<int,int> getPosition() const;
 
     virtual std::vector<std::pair<int,int>> generateMoves() = 0;
 

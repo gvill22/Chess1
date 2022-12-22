@@ -35,7 +35,7 @@ void ChessPiece::setPosition( std::pair<int,int> p )
     position = p; 
 }
 
-std::pair<int,int> ChessPiece::getPosition()
+std::pair<int,int> ChessPiece::getPosition() const
 {
     return position; 
 }

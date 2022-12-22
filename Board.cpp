@@ -1,27 +1,5 @@
 #include "Board.hpp"
 
-// this function will create a copy of a vector without moves that have the same color
-// piece on that square
-std::vector<std::pair<int,int>> Board::removeFriendlyFireMoves(std::vector<std::pair<int,int>> &moveList, ChessPiece* currentP)
-{
-    std::vector<std::pair<int,int>> valid = std::vector<std::pair<int,int>>();
-    
-    for(auto it = moveList.begin(); it != moveList.end() ; it++ )
-    {
-        ChessPiece* piece = this->gameBoard[it->first][it->second].getCurrentPiece();
-        if(piece == nullptr)
-        {
-            valid.push_back(std::make_pair(it->first,it->second));
-        }
-        if(piece != nullptr && piece->getColor() != currentP->getColor())
-        {
-            valid.push_back(std::make_pair(it->first,it->second));
-        }
-    }
-    
-    return valid;
-
-}
 
 
 
@@ -188,7 +166,9 @@ std::vector<std::pair<int,int>> Board::getMoves(std::pair<int,int> coordinates)
     std::vector<std::pair<int,int>> moves = piece->generateMoves();
     // now we can go and get rid of invalid moves
 
-    std::vector<std::pair<int,int>> betterMoves = removeFriendlyFireMoves(moves,piece);
+    auto movesAddress = &moves;
+
+    std::vector<std::pair<int,int>> betterMoves = removeFriendlyFireMoves(*movesAddress,piece);
  
     return betterMoves;
 }
@@ -214,10 +194,174 @@ void Board::displayMoves(std::vector<std::pair<int,int>> moveList)
 
 }
 
-
-
-void Board::makeMove(std::pair<int,int> moveHere)
+// this function will create a copy of a vector without moves that have the same color
+// piece on that square
+std::vector<std::pair<int,int>> Board::removeFriendlyFireMoves(std::vector<std::pair<int,int>> &moveList, const ChessPiece* currentP)
 {
+    std::vector<std::pair<int,int>> valid = std::vector<std::pair<int,int>>();
+    
+    for(auto it = moveList.begin(); it != moveList.end() ; it++ )
+    {
+        ChessPiece* piece = this->gameBoard[it->first][it->second].getCurrentPiece();
+        if(piece == nullptr)
+        {
+            valid.push_back(std::make_pair(it->first,it->second));
+        }
+        if(piece != nullptr && piece->getColor() != currentP->getColor())
+        {
+            valid.push_back(std::make_pair(it->first,it->second));
+        }
+    }
+    
+    return valid;
 
 }
 
+
+const ChessPiece* Board::getPieceAtCoordinates(std::pair<int,int> coordinates)
+{
+    return this->gameBoard[coordinates.first][coordinates.second].getCurrentPiece();
+}
+
+
+
+// This function removes the moves that are invalid because pawns can't move diagonally when not capturing
+std::vector<std::pair<int,int>> Board::removeInvalidPawnMoves(std::vector<std::pair<int,int>> &moves, const ChessPiece* piece)
+{
+    std::vector<std::pair<int,int>> betterMoves;
+
+    for(auto it = moves.cbegin(); it != moves.cend(); it++)
+    {
+        // if the piece is a pawn
+        if(piece->getName() == "P")
+        {
+            // if the pawn is white
+            if(piece->getColor() == "w")
+            {
+                // if the pawn is moving diagonally
+                if(it->first < piece->getPosition().first && it->second != piece->getPosition().second)
+                {
+                    // if the pawn is not capturing a piece
+                    if(this->gameBoard[it->first][it->second].getCurrentPiece() == nullptr)
+                    {
+                        // don't add the move to the list of valid moves
+                        continue;
+                    }
+                }
+            }
+            // if the pawn is black
+            else
+            {
+                // if the pawn is moving diagonally
+                if(it->first > piece->getPosition().first && it->second != piece->getPosition().second)
+                {
+                    // if the pawn is not capturing a piece
+                    if(this->gameBoard[it->first][it->second].getCurrentPiece() == nullptr)
+                    {
+                        // don't add the move to the list of valid moves
+                        continue;
+                    }
+                }
+            }
+        }
+        betterMoves.push_back(*it);
+    }
+
+    return betterMoves;
+}
+
+
+
+// This function make the move selected by the user, doesn't allow the user to make a friendly fire move
+void Board::makeMove(std::pair<int,int> selectedPiece, std::pair<int,int> moveHere)
+{
+    // get the piece that is currently selected
+    ChessPiece* piece = this->gameBoard[selectedPiece.first][selectedPiece.second].getCurrentPiece();
+    // get the piece that is currently at the destination
+    ChessPiece* destinationPiece = this->gameBoard[moveHere.first][moveHere.second].getCurrentPiece();
+
+    // if the destination is empty, just move the piece
+    if(destinationPiece == nullptr)
+    {
+        this->gameBoard[moveHere.first][moveHere.second].setCurrentPiece(piece);
+        this->gameBoard[selectedPiece.first][selectedPiece.second].setCurrentPiece(nullptr);
+        piece->setPosition(moveHere);
+    }
+    // if the destination is occupied by an enemy piece, remove the enemy piece and move the current piece
+    else if(destinationPiece->getColor() != piece->getColor())
+    {
+        this->gameBoard[moveHere.first][moveHere.second].setCurrentPiece(piece);
+        this->gameBoard[selectedPiece.first][selectedPiece.second].setCurrentPiece(nullptr);
+        piece->setPosition(moveHere);
+        delete destinationPiece;
+    }
+    // if the destination is occupied by a friendly piece, do nothing
+    else
+    {
+        std::cout << "You cannot move to a square occupied by a friendly piece\n";
+    }
+    
+}
+
+
+
+std::pair<std::string, std::string> Board::getPieceNameAndColor(std::pair<int,int> coordinates)
+{
+    std::string pieceName;
+    std::string pieceColor;
+
+    pieceName = this->gameBoard[coordinates.first][coordinates.second].getCurrentPiece()->getName();
+    pieceColor = this->gameBoard[coordinates.first][coordinates.second].getCurrentPiece()->getColor();
+
+    return std::make_pair(pieceName, pieceColor);
+}
+
+void Board::welcomePrompt()
+{
+    std::cout << "Welcome to Chess!\n";
+}
+
+
+void Board::promptNewPieceOrMakeMove()
+{
+    std::cout << "Please enter 1 to select a move or enter -1 to select a new piece: ";
+}
+
+
+
+std::pair<int,int> Board::readUserSelectedPiece()
+{
+    std::pair<int,int> coordinates;
+    std::cout << "Please enter the row and column of the piece you want to move: ";
+    std::cin >> coordinates.first >> coordinates.second;
+    return coordinates;
+}
+
+int Board::readUserSelection()
+{
+    int selection;
+    std::cin >> selection;
+    return selection;
+}
+
+
+
+
+std::pair<int,int> Board::readUserMove()
+{
+    std::pair<int,int> coordinates;
+    std::cout << "Please enter the row and column of the square you want to move to: ";
+    std::cin >> coordinates.first >> coordinates.second;
+    return coordinates;
+}
+
+
+bool Board::isGameOver()
+{
+    // check if the king is dead
+
+    // check if the king is in checkmate
+
+    // check if the king is in stalemate
+    return false;
+}

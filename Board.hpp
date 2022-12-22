@@ -7,6 +7,8 @@
 
 class Board{
 
+
+// It looks like this is supper unnecessary
 class Squares{
     private:
         ChessPiece* currentPiece;
@@ -42,11 +44,45 @@ public:
     // to a diffirent square setting the old square's piece to null to signify empty
     // in Addition to this there might be a need to make an eatPiece function that
     // could delete the piece object because it was dynamically allocated
-    void makeMove(std::pair<int,int> moveHere);
+    void makeMove(std::pair<int,int> selectedPiece, std::pair<int,int> moveHere);
 
 
-    std::vector<std::pair<int,int>> removeFriendlyFireMoves(std::vector<std::pair<int,int>> &moveList, ChessPiece* piece);
+    std::pair<std::string, std::string> getPieceNameAndColor(std::pair<int,int> coordinates);
+
+
+
+    //This function will remove moves from the movelist that are aimed at friendly pieces
+    std::vector<std::pair<int,int>> removeFriendlyFireMoves(std::vector<std::pair<int,int>> &moveList, const ChessPiece* piece);
+
+
+    std::vector<std::pair<int,int>> removeInvalidPawnMoves(std::vector<std::pair<int,int>> &moves, const ChessPiece* piece);
+
+
+    //this function will return a constant pointer to a chess piece object
+    // at the given coordinates
+    const ChessPiece* getPieceAtCoordinates(std::pair<int,int> coordinates);
+
+    // This function will prompt the user to enter a move
+    void welcomePrompt();
+
+    // This function will prompt the user to enter a new piece or make a move from the list of available moves
+    void promptNewPieceOrMakeMove();
+
     
+    // This function will take in user input and return a pair of ints
+    std::pair<int,int> readUserSelectedPiece();
+
+    // This function will take in user input and return a pair of ints
+    std::pair<int,int> readUserMove();
+
+    // Whether or not the user wants to make a move or select a new piece
+    int readUserSelection();
+
+    // This function will check if the game is over
+    bool isGameOver();
+
+
+
 
 };
 
